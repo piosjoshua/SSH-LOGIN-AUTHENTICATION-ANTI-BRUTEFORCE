@@ -1,0 +1,18 @@
+**idletest.sh**
+
+PAM handles authentication, but SSH itself can monitor idle sessions. 
+By setting ClientAliveInterval (how often the server checks for activity) and 
+ClientAliveCountMax (how many missed checks before disconnect), we ensure inactive users are logged out automatically. 
+PAM still authenticates users initially, but idle handling is managed by SSH.
+
+**restest.sh**
+When a user tries to log in via SSH, PAM modules check their credentials. 
+The SSH server first checks AllowUsers and immediately denies anyone not on the list before PAM even verifies passwords. 
+So, PAM works in the background to authenticate valid users, 
+while the config ensures only selected users reach the PAM stage.
+
+**locktest**
+Here, PAM modules like pam_faillock.so are configured in /etc/pam.d/sshd.
+PAM tracks failed authentication attempts for each user.
+If a user exceeds the configured limit (e.g., 3 failed attempts), PAM locks the account temporarily (e.g., 10 minutes).
+This prevents brute-force attacks because repeated password guessing triggers the lock before the attacker can succeed.
